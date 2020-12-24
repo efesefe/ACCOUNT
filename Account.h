@@ -2,8 +2,11 @@
 #define Account_H
 
 #include <vector>
-
+#include <chrono>
+#include <ctime>
 #include "Employee.h"
+
+typedef std::chrono::system_clock Clock;
 
 class Account
 {
@@ -89,32 +92,45 @@ public:
             default:
                 break;
         }
+        emp.setDayOffNumber(0);
     }
     double calcCompensation(Employee &emp)//tazminat
     {
-        /*
-         * int year = emp.getYears;
-         * double comp , five = 5 , ten = 10 , twenty = 20 , thirty = 30;
-         * if(year <= 5)
-         * {
-         *      comp = year * five;
-         * }
-         * else if(5 < year && year <= 10)
-         * {
-         *      comp = 5 * five;
-         *      comp += (year - 5) * ten;
-         * }
-         * else if(10 < year && year <= 20)
-         * {
-         *      comp = 5 * five + 5 * ten;
-         *      comp += (year - 9) * twenty;
-         * }
-         * else if(20 < year)
-         * {
-         *      comp = 5 * five + 5 * ten + 10 twenty;
-         *      comp += (year - 20) * thirty;
-         * }
-         * */
+        auto now = Clock::now();
+        std::time_t now_c = Clock::to_time_t(now);
+        struct tm *parts = std::localtime(&now_c);
+
+        string yearStr = emp.getEnterDate();
+        int enterYear = 0, currentYear , k = 0 , i , worked;
+        double comp = 0, five = 5 , ten = 10 , twenty = 20 , thirty = 30;
+
+        currentYear = 1900 + parts->tm_year;
+        i = yearStr.size() - 1;
+        while(k < yearStr.size())
+        {
+            enterYear += ((int)yearStr[k++] - (int)'0') * pow(10 , i--);
+        }
+        worked = currentYear - enterYear;
+        if(worked <= 5)
+        {
+            comp = worked * five;
+        }
+        else if(5 < worked && worked <= 10)
+        {
+            comp = 5 * five;
+            comp += (worked - 5) * ten;
+        }
+        else if(10 < worked && worked <= 20)
+        {
+            comp = 5 * five + 5 * ten;
+            comp += (worked - 9) * twenty;
+        }
+        else if(20 < worked)
+        {
+            comp = 5 * five + 5 * ten + 10 * twenty;
+            comp += (worked - 20) * thirty;
+        }
+
     }
 };
 
